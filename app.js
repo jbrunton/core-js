@@ -41,10 +41,10 @@ define([
     
             var routingModule,
                 templatingModule,
-                authModule,
-                typesModule;
+                authModule/*,
+                typesModule;*/
                 
-            typesModule = _modules['TypesModule'].module;
+            // typesModule = _modules['TypesModule'].module;
 
             /*if (config.resources) {            
                 app.resources = {
@@ -237,9 +237,9 @@ define([
     
     };
     
-    app.core.define('TypesModule', function(sandbox) {
-        return typesModule;
-    });
+    //app.core.define('TypesModule', function(sandbox) {
+    //    return typesModule;
+    //});
     
     return app;
 
