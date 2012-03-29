@@ -1,33 +1,66 @@
 define([
-    'core/mediator'
-], function(mediator) {
+    'core/mediator',
+    'core/modules/types_module'
+], function(mediator, typesModule) {
 
     var _modules = {};
     
     var app = {
         initialize: function(config) {
         
-            var routingEngine,
-                templatingEngine;
+            var modulesReady = function() {
+                return _.all(_modules, function(x) {
+                    return x.ready;
+                });
+            };
+            
+            var maybeReady = function(module) {
+                if (modulesReady()) {
+                    console.log("Application ready");
+                    mediator.publish('Application.ready', [app]);
+                }
+            };
+    
+            var routingModule,
+                templatingModule,
+                authModule;
 
             if (config.templating) {
-                templatingEngine = config.templating.engine;
+                templatingModule = _modules[config.templating.module].module;
                 
                 app.tmpl = {
-                    renderView: templatingEngine.renderView
+                    renderView: templatingModule.renderView
                 };
                 
                 if (config.templating.defaultMaster) {
-                    templatingEngine.registerMaster('default', config.templating.defaultMaster);
+                    templatingModule.registerMaster('default', config.templating.defaultMaster);
                 }
-                
-                templatingEngine.initialize();
             }
             
             if (config.routing) {
-                routingEngine = config.routing.engine;
+                routingModule = _modules[config.routing.module].module;
+            }
+            
+            if (config.auth) {
+                authModule = _modules[config.auth.module].module;
                 
-                routingEngine.initialize();
+                var signin = function(username, password, success) {
+                    authModule.signin(username, password, success);
+                };
+                
+                var signout = function() {
+                    authModule.signout();
+                };
+                
+                var currentUser = function() {
+                    return authModule.currentUser();
+                };
+
+                app.auth = {
+                    signin: signin,
+                    signout: signout,
+                    currentUser: currentUser
+                };
             }
             
 /*            if (config.logging) {
@@ -53,8 +86,13 @@ define([
             
             // bind subscriptions
             
-            _.each(_modules, function(moduleInfo) {
+            _.each(_modules, function(moduleInfo, moduleName) {
                 moduleInfo.sandbox.bindSubscriptions(moduleInfo.module);
+                
+                mediator.subscribe(moduleName + ".ready", function() {
+                    _modules[moduleName].ready = true;
+                    maybeReady();
+                });
             });
             
             
@@ -75,7 +113,7 @@ define([
                             _.each(drArg.routes, function(name, route) {
                                 var callback = moduleInfo.module[name];
                                 
-                                routingEngine.route(route, name, function() {
+                                routingModule.route(route, name, function() {
                                     // app.context.start();
                                     callback.apply(moduleInfo.module, arguments);
                                 });
@@ -83,7 +121,7 @@ define([
                             });
                             
                             _.each(drArg.templates, function(tmpl, name) {
-                                templatingEngine.registerTemplate(name, tmpl);
+                                templatingModule.registerTemplate(name, tmpl);
                             });
                         }
                     }
@@ -92,11 +130,9 @@ define([
         
             mediator.publish("Application.initialize");
             
-            if (routingEngine) {
-                routingEngine.start();
-            }
             
-            mediator.publish("Application.ready");
+            
+            // mediator.publish("Application.ready");
         }
     };
     
@@ -168,6 +204,10 @@ define([
         }
     
     };
+    
+    app.core.define('TypesModule', function(sandbox) {
+        return typesModule;
+    });
     
     return app;
 

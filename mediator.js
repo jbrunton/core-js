@@ -30,7 +30,7 @@ define([], function() {
     };
     
     var publish = function(eventName, args) {
-        // console.log(eventName + " published");
+        console.log(eventName + " published");
         _.each(_channels, function(handlers, channelName) {
             if (channelName == eventName) {
                 _.each(handlers, function(handler) {
