@@ -5,6 +5,24 @@ define([
 
     var _modules = {};
     
+    var Context = function() {
+        this.currentState = this.activeState = {};
+    };
+    
+    Context.prototype.push = function(name, value) {
+        this.activeState[name] = value;
+    };
+    
+    Context.prototype.start = function() {
+        this.currentState = this.activeState;
+        this.activeState = {};
+        this.push('History.prevUrl', Backbone.history.fragment);
+    };
+    
+    Context.prototype.peek = function(name) {
+        return this.currentState[name];
+    };
+    
     var app = {
         initialize: function(config) {
         
@@ -23,7 +41,20 @@ define([
     
             var routingModule,
                 templatingModule,
-                authModule;
+                authModule,
+                typesModule;
+                
+            typesModule = _modules['TypesModule'].module;
+
+            /*if (config.resources) {            
+                app.resources = {
+                    locate: typesModule.locateResource
+                };
+                
+                _.each(config.resources.resources, function(resource) {
+                    typesModule.registerResource(resource);
+                });
+            }*/
 
             if (config.templating) {
                 templatingModule = _modules[config.templating.module].module;
@@ -38,6 +69,7 @@ define([
             }
             
             if (config.routing) {
+                app.context = new Context();
                 routingModule = _modules[config.routing.module].module;
             }
             
@@ -114,7 +146,7 @@ define([
                                 var callback = moduleInfo.module[name];
                                 
                                 routingModule.route(route, name, function() {
-                                    // app.context.start();
+                                    app.context.start();
                                     callback.apply(moduleInfo.module, arguments);
                                 });
                         

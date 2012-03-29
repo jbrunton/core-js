@@ -150,11 +150,21 @@ define([
             registerComplexType: function(typeDesc) {
                 registerType(new ComplexType(typeDesc));
             },
+            
+            locateResource: function(typeName) {
+                return _resources[typeName];
+            },
         
             registerResource: function(params) {
                 var objCtor = params.objCtor,
                     typeName = params.typeName,
                     collectionName = params.collectionName;
+                    
+                if (!objCtor) {
+                    objCtor = function(data) {
+                        this.deserialize(data || {});
+                    };
+                }
                     
                 _resources[typeName] = objCtor;
         
