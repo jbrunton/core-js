@@ -59,13 +59,37 @@ define([
             if (config.templating) {
                 templatingModule = _modules[config.templating.module].module;
                 
-                app.tmpl = {
-                    renderView: templatingModule.renderView
-                };
-                
                 if (config.templating.defaultMaster) {
-                    templatingModule.registerMaster('default', config.templating.defaultMaster);
+                    templatingModule.registerTemplate(
+                        config.templating.defaultMaster.name,
+                        config.templating.defaultMaster.template
+                    );
                 }
+                
+                function renderPage() {
+                    templatingModule.clearBindings();
+                    templatingModule.bind(config.templating.defaultBindings);
+                    
+                    if (arguments.length > 0) {
+                        if (typeof arguments[0] == 'object') {
+                            templatingModule.bind(arguments[0]);
+                        } else if (typeof arguments[0] == 'string') {
+                            var bindings = {};
+                            bindings[config.templating.defaultSection] = {
+                                name: arguments[0],
+                                data: arguments.length > 1 ? arguments[1] : null
+                            };
+                            templatingModule.bind(bindings);
+                        }
+                    }
+                    
+                    templatingModule.renderPage(config.templating.defaultMaster.name);
+                }
+                
+                app.tmpl = {
+                    bind: templatingModule.bind,
+                    renderPage: renderPage
+                };
             }
             
             if (config.routing) {
