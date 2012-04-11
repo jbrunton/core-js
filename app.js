@@ -5,6 +5,8 @@ define([
 
     var _modules = {};
     
+    var _urlMap = {};
+    
     var Context = function() {
         this.currentState = this.activeState = {};
     };
@@ -93,9 +95,19 @@ define([
             
             if (config.routing) {
                 app.context = new Context();
+                
                 routingModule = _modules[config.routing.module].module;
+                
+                function urlFor(obj, action) {
+                    if (!action) {
+                        action = 'view';
+                    }
+                    return _urlMap[obj.type_name](obj, action);
+                }
+                
                 app.nav = {
-                    to: routingModule.navigate
+                    to: routingModule.navigate,
+                    urlFor: urlFor
                 };
             }
             
@@ -181,6 +193,8 @@ define([
                             _.each(drArg.templates, function(tmpl, name) {
                                 templatingModule.registerTemplate(name, tmpl);
                             });
+                        } else if (drName == "Application.mapResource") {
+                            _.extend(_urlMap, drArg);
                         }
                     }
                 });

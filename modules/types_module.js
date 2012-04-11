@@ -185,6 +185,8 @@ define([
                 objCtor.prototype.load = function(id) {
                     var self = this;
                     
+                    this.id(id);
+                    
                     httpResource.doReadReq(id, function(data) {
                         deserialize(data, self);
                     });
