@@ -1,7 +1,7 @@
 define([
     'core/mediator',
-    'core/modules/types_module'
-], function(mediator, typesModule) {
+    'core/components/resources'
+], function(mediator, resourcesComponent) {
 
     var _modules = {};
     
@@ -41,20 +41,14 @@ define([
     
             var routingModule,
                 templatingModule,
-                authModule/*,
-                typesModule;*/
+                authModule,
+                typesModule;
                 
-            // typesModule = _modules['TypesModule'].module;
-
-            /*if (config.resources) {            
-                app.resources = {
-                    locate: typesModule.locateResource
-                };
-                
-                _.each(config.resources.resources, function(resource) {
-                    typesModule.registerResource(resource);
-                });
-            }*/
+            if (config.resources) {
+                typesModule = _modules['TypesModule'].module;
+                resourcesComponent.initialize(config, typesModule);
+                app.resources = resourcesComponent.facade();
+            }
 
             if (config.templating) {
                 templatingModule = _modules[config.templating.module].module;
@@ -86,8 +80,13 @@ define([
                     templatingModule.renderPage(config.templating.defaultMaster.name);
                 }
                 
+                function defaultBindings(bindings) {
+                    config.templating.defaultBindings = bindings;
+                }
+                
                 app.tmpl = {
                     bind: templatingModule.bind,
+                    defaultBindings: defaultBindings,
                     renderPage: renderPage
                 };
             }
@@ -95,6 +94,9 @@ define([
             if (config.routing) {
                 app.context = new Context();
                 routingModule = _modules[config.routing.module].module;
+                app.nav = {
+                    to: routingModule.navigate
+                };
             }
             
             if (config.auth) {

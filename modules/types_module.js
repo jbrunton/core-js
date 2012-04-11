@@ -96,6 +96,7 @@ define([
         _types[type.type_name] = type;
     };
     
+    app.core.define('TypesModule', function(sandbox) {
         var module = {
             "@Application.initialize": function(app) {
                 var self = this;
@@ -241,5 +242,6 @@ define([
             }
         };
     
-    return module;
+        return module;
+    });
 });
