@@ -9,8 +9,8 @@ define([
         return "/api/" + this.collectionName + (id ? "/" + id : "");
     };
     
-    HttpResource.prototype.doReadCollectionReq = function(success, error) {
-        var url = this.actionUrl();
+    HttpResource.prototype.doReadCollectionReq = function(success, error, opts) {
+        var url = (opts && opts.url) ? opts.url : this.actionUrl();
         $.ajax({
             type: 'GET',
             url: url,

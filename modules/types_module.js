@@ -239,7 +239,7 @@ define([
                         if (success) {
                             success(collection);
                         }
-                    });
+                    }, null, reqOptions);
                 };
             }
         };
