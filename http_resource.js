@@ -32,8 +32,12 @@ define([
     
     HttpResource.prototype.actionUrl = function(id, reqOpts) {
         var url = "/api/" + this.collectionName + (id ? "/" + id : "");
+        
         if (reqOpts) {
-            url += "?" + genReqParams(reqOpts);
+            var queryStr = genReqParams(reqOpts);
+            if (queryStr) {
+                url += "?" + queryStr;
+            }
         }
         return url;
     };

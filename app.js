@@ -19,7 +19,7 @@ define([
     Context.prototype.start = function() {
         this.currentState = this.activeState;
         this.activeState = {};
-        this.push('History.prevUrl', Backbone.history.fragment);
+        this.push('History.prevUrl', '/' + Backbone.history.fragment);
     };
     
     Context.prototype.peek = function(name) {
