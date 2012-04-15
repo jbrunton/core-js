@@ -3,7 +3,8 @@ define([
     'core/components/resources'
 ], function(mediator, resourcesComponent) {
 
-    var _modules = {};
+    var _modules = {},
+        _extenders = {};
     
     var _urlMap = {};
     
@@ -273,6 +274,16 @@ define([
                 sandbox: sandbox,
             };
         
+        },
+        
+        defineExtender: function(name, extr) {
+            _extenders[name] = extr;
+        },
+        
+        extend: function(obj, extns) {
+            _.each(extns, function(defn, extName) {
+                _extenders[extName].apply(obj, defn);
+            });
         }
     
     };

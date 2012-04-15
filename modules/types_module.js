@@ -182,14 +182,20 @@ define([
                     return this;
                 };
                 
-                objCtor.prototype.load = function(id) {
+                var applyExtensions = function(obj, opts) {
+                    app.core.extend(obj, opts.extensions);
+                };
+                
+                objCtor.prototype.load = function(id, reqOpts) {
                     var self = this;
                     
                     this.id(id);
                     
                     httpResource.doReadReq(id, function(data) {
                         deserialize(data, self);
-                    });
+                    }, null, reqOpts);
+                    
+                    applyExtensions(self, reqOpts);
                     
                     return this;
                 };
@@ -217,7 +223,7 @@ define([
                     return this;
                 };
                 
-                objCtor.load = function(id, success, error) {
+                objCtor.load = function(id, success, error, reqOpts) {
                     var self = this;
                     
                     httpResource.doReadReq(id, function(data) {

@@ -5,8 +5,37 @@ define([
         this.collectionName = collectionName;
     };
     
-    HttpResource.prototype.actionUrl = function(id) {
-        return "/api/" + this.collectionName + (id ? "/" + id : "");
+    var genReqParams = function(opts) {
+        var str;
+        
+        var doRec = function(opts, scope) {
+            _.each(opts.includes, function(x,f) {
+            
+                if (x.includes) {                        
+                    doRec(x, f);
+                } else {
+                    if (str) {
+                        str += ",";
+                    } else {
+                        str = "includes=";
+                    }
+                    
+                    str += (scope ? scope + "." : "") + f;
+                }
+            });
+        };
+        
+        doRec(opts);
+        
+        return str;
+    };
+    
+    HttpResource.prototype.actionUrl = function(id, reqOpts) {
+        var url = "/api/" + this.collectionName + (id ? "/" + id : "");
+        if (reqOpts) {
+            url += "?" + genReqParams(reqOpts);
+        }
+        return url;
     };
     
     HttpResource.prototype.doReadCollectionReq = function(success, error, opts) {
@@ -20,8 +49,8 @@ define([
         });
     };
     
-    HttpResource.prototype.doReadReq = function(id, success, error) {
-        var url = this.actionUrl(id);
+    HttpResource.prototype.doReadReq = function(id, success, error, reqOpts) {
+        var url = this.actionUrl(id, reqOpts);
         $.ajax({
             type: 'GET',
             url: url,
