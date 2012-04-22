@@ -155,6 +155,10 @@ define([
             locateResource: function(typeName) {
                 return _resources[typeName];
             },
+            
+            newResource: function(typeName, data) {
+                return new (_resources[typeName])(data);
+            },
         
             registerResource: function(params) {
                 var objCtor = params.objCtor,

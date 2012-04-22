@@ -13,7 +13,8 @@ define([
         
         facade: function() {
             return {
-                locate: _typesModule.locateResource
+                locate: _typesModule.locateResource,
+                new: _typesModule.newResource
             };
         }
     };

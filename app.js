@@ -273,6 +273,8 @@ define([
                 module: module,
                 sandbox: sandbox,
             };
+            
+            return module;
         
         },
         
