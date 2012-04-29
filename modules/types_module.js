@@ -188,6 +188,12 @@ define([
                 
                 var applyExtensions = function(obj, opts) {
                     app.core.extend(obj, opts.extensions);
+                    
+                    if (opts.includes) {
+                        _.each(obj.includes, function(fieldOpts, fieldName) {
+                            app.core.extend(obj[fieldName], fieldOpts);
+                        });
+                    }
                 };
                 
                 objCtor.prototype.load = function(id, reqOpts) {

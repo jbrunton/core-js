@@ -1,6 +1,7 @@
 define([], function() {
 
-    var _channels = {};
+    var _channels = {},
+        _waits = [];
         
     var subscribe = function() {
         var eventName = arguments[0],
@@ -38,10 +39,42 @@ define([], function() {
                 });
             }
         });
+        
+        _.each(_waits, function(wait) {
+            _.each(wait.events, function(event) {
+                if (event.name == eventName) {
+                    event.published = true;
+                }
+            });
+            
+            var active = !_.all(wait.events, function(event) {
+                return event.published;
+            });
+            
+            if (!active) {
+                wait.active = false;
+                wait.handler();
+            }
+        });
+        
+        _waits = _.filter(_waits, function(wait) {
+            return wait.active;
+        });
+    };
+    
+    var when = function(events, handler) {
+        _waits.push({
+            active: true,
+            events: _.map(events, function(eventName) {
+                return { name: eventName, published: false };
+            }),
+            handler: handler
+        });
     };
     
     return {
         subscribe: subscribe,
-        publish: publish
+        publish: publish,
+        when: when
     };
 });
