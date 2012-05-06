@@ -1,7 +1,9 @@
 define([
+    '../app',
     './simple_type',
-    './complex_type'
-], function(SimpleType, ComplexType) {
+    './complex_type',
+    '../http_resource'
+], function(app, SimpleType, ComplexType, HttpResource) {
 
     var Environment = function() {
         var _types = [],
@@ -15,6 +17,18 @@ define([
             _types[type.type_name] = type;
         };
         
+        this.serialize = function(obj, options) {
+            var objTy = this.getType(obj.type_name);
+            var data = objTy.serialize(obj, options);
+            return data;
+        };
+        
+        this.deserialize = function(data, obj) {
+            var objTy = this.getType(data.type_name || obj.type_name);
+            var obj = objTy.deserialize(data, obj);
+            return obj;
+        };
+
         this.registerSimpleType = function(type_name, serialize, deserialize) {
             registerType(new SimpleType(type_name, serialize, deserialize));
         };
@@ -32,6 +46,8 @@ define([
         };
         
         this.registerResource = function(params) {
+            var env = this;
+            
             var objCtor = params.objCtor,
                 typeName = params.typeName,
                 collectionName = params.collectionName;
@@ -49,11 +65,11 @@ define([
             objCtor.prototype.type_name = typeName;
             
             objCtor.prototype.serialize = function() {
-                return serialize(this);
+                return env.serialize(this);
             };
         
             objCtor.prototype.deserialize = function(data) {
-                deserialize(data, this);
+                env.deserialize(data, this);
                 return this;
             };
             
@@ -73,7 +89,7 @@ define([
                 this.id(id);
                 
                 httpResource.doReadReq(id, function(data) {
-                    deserialize(data, self);
+                    env.deserialize(data, self);
                 }, null, reqOpts);
                 
                 applyExtensions(self, reqOpts);
@@ -84,17 +100,17 @@ define([
             objCtor.prototype.save = function(success, options) {
                 var self = this;
                 
-                var data = serialize(this, options);
+                var data = env.serialize(this, options);
                 if (this.id() > 0) {
                     httpResource.doPutReq(data, function(data) {
-                        deserialize(data, self);
+                        env.deserialize(data, self);
                         if (success) {
                             success(self);
                         }
                     });
                 } else {
                     httpResource.doPostReq(data, function(data) {
-                        deserialize(data, self);
+                        env.deserialize(data, self);
                         if (success) {
                             success(self);
                         }
