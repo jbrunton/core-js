@@ -1,7 +1,8 @@
 define([
     './mediator',
-    './components/resources'
-], function(mediator, resourcesComponent) {
+    './components/resources',
+    './components/types'
+], function(mediator, resourcesComponent, typesComponent) {
 
     var _modules = {},
         _extenders = {};
@@ -44,15 +45,14 @@ define([
     
             var routingModule,
                 templatingModule,
-                authModule,
-                typesModule;
+                authModule;
                 
-            if (config.resources) {
-                typesModule = _modules['TypesModule'].module;
-                resourcesComponent.initialize(config, typesModule);
-                app.resources = resourcesComponent.facade();
-            }
+            app.types = typesComponent.initialize();
 
+            if (config.resources) {
+                app.resources = resourcesComponent.initialize(config, app.types);
+            }
+            
             if (config.templating) {
                 templatingModule = _modules[config.templating.module].module;
                 

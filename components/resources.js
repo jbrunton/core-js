@@ -1,21 +1,16 @@
 define([
 ], function() {
 
-    var _typesModule;
-
     var component = {
-        initialize: function(config, typesModule) {
-            _typesModule = typesModule;
+        initialize: function(config, typesComponent) {
             _.each(config.resources.resources, function(resource) {
-                typesModule.registerResource(resource);
+                typesComponent.registerResource(resource);
             });
-        },
-        
-        facade: function() {
+            
             return {
-                locate: _typesModule.locateResource,
-                new: _typesModule.newResource
-            };
+                locate: typesComponent.locateResource,
+                new: typesComponent.newResource
+            };            
         }
     };
     
