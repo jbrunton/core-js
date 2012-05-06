@@ -32,9 +32,7 @@ define([
     
 
     var typesComponent = {
-        initialize: function() {
-            var env = new Environment();
-            
+        initialize: function(env) {
             env.registerSimpleType("integer");
             env.registerSimpleType("string");
             env.registerSimpleType("datetime", formatDate, parseDate);

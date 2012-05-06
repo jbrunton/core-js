@@ -6,8 +6,9 @@ define([
 ], function(app, SimpleType, ComplexType, HttpResource) {
 
     var Environment = function() {
-        var _types = [],
-            _resources = [];
+        var _types = {},
+            _resources = {},
+            _extenders = {};
     
         function registerType(type) {
             if (_types[type.type_name]) {
@@ -45,6 +46,16 @@ define([
             return _resources[type_name];
         };
         
+        this.defineExtender = function(name, extr) {
+            _extenders[name] = extr;
+        };
+        
+        this.extend = function(obj, extns) {
+            _.each(extns, function(defn, extName) {
+                _extenders[extName].apply(obj, defn);
+            });
+        };
+        
         this.registerResource = function(params) {
             var env = this;
             
@@ -74,11 +85,11 @@ define([
             };
             
             var applyExtensions = function(obj, opts) {
-                app.core.extend(obj, opts.extensions);
+                env.extend(obj, opts.extensions);
                 
                 if (opts.includes) {
                     _.each(obj.includes, function(fieldOpts, fieldName) {
-                        app.core.extend(obj[fieldName], fieldOpts);
+                        env.extend(obj[fieldName], fieldOpts);
                     });
                 }
             };

@@ -1,11 +1,13 @@
 define([
     './mediator',
+    './types/environment',
     './components/resources',
     './components/types'
-], function(mediator, resourcesComponent, typesComponent) {
+], function(mediator, Environment, resourcesComponent, typesComponent) {
 
-    var _modules = {},
-        _extenders = {};
+    var _modules = {};
+    
+    var env = new Environment();
     
     var _urlMap = {};
     
@@ -47,7 +49,7 @@ define([
                 templatingModule,
                 authModule;
                 
-            app.types = typesComponent.initialize();
+            app.types = typesComponent.initialize(env);
 
             if (config.resources) {
                 app.resources = resourcesComponent.initialize(config, app.types);
@@ -249,12 +251,12 @@ define([
         };
     };
     
-    var extend = function(name, ext, module) {
+    /*var extend = function(name, ext, module) {
         _extensions[name] = {
             ext: ext,
             module: module
         };
-    };
+    };*/
     
     app.core = {
     
@@ -279,13 +281,11 @@ define([
         },
         
         defineExtender: function(name, extr) {
-            _extenders[name] = extr;
+            env.defineExtender(name, extr);
         },
         
         extend: function(obj, extns) {
-            _.each(extns, function(defn, extName) {
-                _extenders[extName].apply(obj, defn);
-            });
+            env.extend(obj, extns);
         }
     
     };
