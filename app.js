@@ -1,6 +1,6 @@
 define([
-    'core/mediator',
-    'core/components/resources'
+    './mediator',
+    './components/resources'
 ], function(mediator, resourcesComponent) {
 
     var _modules = {},

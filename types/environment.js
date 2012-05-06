@@ -1,6 +1,6 @@
 define([
-    'core/types/simple_type',
-    'core/types/complex_type'
+    './simple_type',
+    './complex_type'
 ], function(SimpleType, ComplexType) {
 
     var Environment = function() {

@@ -1,4 +1,4 @@
-define(['core/mediator'], function (mediator) {
+define(['../mediator'], function (mediator) {
     
     describe('Mediator', function() {
 

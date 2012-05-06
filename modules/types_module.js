@@ -1,6 +1,6 @@
 define([
-    'core/app',
-    'core/http_resource'
+    '../app',
+    '../http_resource'
 ], function(app, HttpResource) {
 
     var _types = {},

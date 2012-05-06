@@ -1,4 +1,4 @@
-define(['core/app'], function (app) {
+define(['../app'], function (app) {
   
     describe('app.core', function () {
   
