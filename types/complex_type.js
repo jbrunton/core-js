@@ -27,7 +27,7 @@ define([], function() {
         this.deserialize = function(data, target) {
             if (!target) {
                 if (env.getResource(typeDesc.type_name)) {
-                    target = new env.getResource(typeDesc.type_name);
+                    target = new (env.getResource(typeDesc.type_name));
                 } else {
                     target = {};
                 }
