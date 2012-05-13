@@ -94,13 +94,16 @@ define([
                 }
             };
             
-            objCtor.prototype.load = function(id, reqOpts) {
+            objCtor.prototype.load = function(id, reqOpts, success) {
                 var self = this;
                 
                 this.id(id);
                 
                 httpResource.doReadReq(id, function(data) {
                     env.deserialize(data, self);
+                    if (success) {
+                        success(self);
+                    }
                 }, null, reqOpts);
                 
                 applyExtensions(self, reqOpts);

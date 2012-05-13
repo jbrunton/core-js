@@ -25,6 +25,9 @@ define([], function() {
         };
         
         this.deserialize = function(data, target) {
+            if (!data) {
+                return null;
+            }
             if (!target) {
                 if (env.getResource(typeDesc.type_name)) {
                     target = new (env.getResource(typeDesc.type_name));
@@ -33,6 +36,7 @@ define([], function() {
                 }
             }
             _.each(typeDesc.properties, function(propInfo, propName) {
+                // TODO: error checking on the property type name (check it exists!)
                 var tyName = typeDesc.properties[propName].type_name,
                     propType = env.getType(tyName);
                 if (tyName == "list") {

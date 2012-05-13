@@ -35,6 +35,7 @@ define([
         initialize: function(env) {
             env.registerSimpleType("integer");
             env.registerSimpleType("string");
+            env.registerSimpleType("float");
             env.registerSimpleType("datetime", formatDate, parseDate);
             
             // TODO: can we make list types more fundamental to the algorithm?  serialization logic
