@@ -101,11 +101,22 @@ define([
                 
                 routingModule = _modules[config.routing.module].module;
                 
-                function urlFor(obj, action) {
-                    if (!action) {
-                        action = 'view';
+                function urlFor() {           
+                    var action, obj_type, obj_id;
+                    
+                    if (typeof arguments[0] == 'object') {
+                        var obj = arguments[0];
+                        
+                        obj_type = obj.type_name;                        
+                        obj_id = obj.id();
+                        action = (arguments.length > 1) ? arguments[1] : 'view';                        
+                    } else {
+                        obj_type = arguments[0];
+                        obj_id = arguments[1];
+                        action = (arguments.length > 2) ? arguments[2] : 'view';                            
                     }
-                    return _urlMap[obj.type_name](obj, action);
+                    
+                    return _urlMap[obj_type](obj_id, action);
                 }
                 
                 app.nav = {
