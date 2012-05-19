@@ -15,7 +15,12 @@ define([], function() {
                     || (propType.type_name == 'list' && !_.isUndefined(env.getResource(propInfo.item_type)));
                 if (!resTy || recursive) {
                     var propValue = obj[propName]();
-                    data[propName] = propType.serialize(propValue);
+                    if (!_.isNull(propValue)) {
+                        console.log("propName: " + propName + ", propValue: " + propValue + ", _.isNull(propValue): false");
+                        data[propName] = propType.serialize(propValue);
+                    } else {
+                        console.log("propName: " + propName + ", propValue: " + propValue + ", _.isNull(propValue): true");
+                    }
                 } else {
                     console.log("not recursively serializing " + propName);
                 }
