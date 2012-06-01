@@ -1,13 +1,15 @@
 define([
     'core/mediator',
     'core/components/resources'
-], function(mediator, resourcesComponent) {
+], function(Mediator, resourcesComponent) {
 
     var _modules = {},
         _extenders = {};
     
     var _urlMap = {};
     
+    var mediator = new Mediator();
+
     var Context = function() {
         this.currentState = this.activeState = {};
     };

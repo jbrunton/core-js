@@ -1,9 +1,12 @@
 define([], function() {
 
+	var Mediator = function() {
+	};
+
     var _channels = {},
         _waits = [];
-        
-    var subscribe = function() {
+    
+    Mediator.prototype.subscribe = function() {
         var eventName = arguments[0],
             eventHandler,
             context,
@@ -30,7 +33,7 @@ define([], function() {
         _channels[eventName].push(handler);
     };
     
-    var publish = function(eventName, args) {
+    Mediator.prototype.publish = function(eventName, args) {
         console.log(eventName + " published");
         _.each(_channels, function(handlers, channelName) {
             if (channelName == eventName) {
@@ -62,7 +65,7 @@ define([], function() {
         });
     };
     
-    var when = function(events, handler) {
+    Mediator.prototype.when = function(events, handler) {
         _waits.push({
             active: true,
             events: _.map(events, function(eventName) {
@@ -71,10 +74,6 @@ define([], function() {
             handler: handler
         });
     };
-    
-    return {
-        subscribe: subscribe,
-        publish: publish,
-        when: when
-    };
+	
+	return Mediator;
 });

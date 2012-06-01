@@ -1,15 +1,16 @@
-define(['core/mediator'], function (mediator) {
+define(['core/mediator'], function (Mediator) {
     
     describe('Mediator', function() {
 
         it ('should publish events', function() {
             
             var handlerCalled = false;
-            
+            var mediator = new Mediator();
+			
             var handler = function() {
                 handlerCalled = true;
             };
-            
+
             mediator.subscribe('foo', handler);
             mediator.publish('foo');
             
@@ -20,7 +21,8 @@ define(['core/mediator'], function (mediator) {
         it ('can wait() for multiple async events', function() {
             
             var handlerCalled = false;
-            
+            var mediator = new Mediator();
+			
             var handler = function() {
                 handlerCalled = true;
             };
