@@ -15,7 +15,12 @@ define([], function() {
                     || (propType.type_name == 'list' && !_.isUndefined(env.getResource(propInfo.item_type)));
                 if (!resTy || recursive) {
                     var propValue = obj[propName]();
-                    data[propName] = propType.serialize(propValue);
+                    if (!_.isNull(propValue)) {
+                        console.log("propName: " + propName + ", propValue: " + propValue + ", _.isNull(propValue): false");
+                        data[propName] = propType.serialize(propValue);
+                    } else {
+                        console.log("propName: " + propName + ", propValue: " + propValue + ", _.isNull(propValue): true");
+                    }
                 } else {
                     console.log("not recursively serializing " + propName);
                 }
@@ -25,14 +30,18 @@ define([], function() {
         };
         
         this.deserialize = function(data, target) {
+            if (!data) {
+                return null;
+            }
             if (!target) {
                 if (env.getResource(typeDesc.type_name)) {
-                    target = new env.getResource(typeDesc.type_name);
+                    target = new (env.getResource(typeDesc.type_name));
                 } else {
                     target = {};
                 }
             }
             _.each(typeDesc.properties, function(propInfo, propName) {
+                // TODO: error checking on the property type name (check it exists!)
                 var tyName = typeDesc.properties[propName].type_name,
                     propType = env.getType(tyName);
                 if (tyName == "list") {

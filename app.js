@@ -1,10 +1,13 @@
 define([
-    'core/mediator',
-    'core/components/resources'
-], function(Mediator, resourcesComponent) {
+    './mediator',
+    './types/environment',
+    './components/resources',
+    './components/types'
+], function(mediator, Environment, resourcesComponent, typesComponent) {
 
-    var _modules = {},
-        _extenders = {};
+    var _modules = {};
+    
+    var env = new Environment();
     
     var _urlMap = {};
     
@@ -46,15 +49,14 @@ define([
     
             var routingModule,
                 templatingModule,
-                authModule,
-                typesModule;
+                authModule;
                 
-            if (config.resources) {
-                typesModule = _modules['TypesModule'].module;
-                resourcesComponent.initialize(config, typesModule);
-                app.resources = resourcesComponent.facade();
-            }
+            app.types = typesComponent.initialize(env);
 
+            if (config.resources) {
+                app.resources = resourcesComponent.initialize(config, app.types);
+            }
+            
             if (config.templating) {
                 templatingModule = _modules[config.templating.module].module;
                 
@@ -101,11 +103,22 @@ define([
                 
                 routingModule = _modules[config.routing.module].module;
                 
-                function urlFor(obj, action) {
-                    if (!action) {
-                        action = 'view';
+                function urlFor() {           
+                    var action, obj_type, obj_id;
+                    
+                    if (typeof arguments[0] == 'object') {
+                        var obj = arguments[0];
+                        
+                        obj_type = obj.type_name;                        
+                        obj_id = obj.id();
+                        action = (arguments.length > 1) ? arguments[1] : 'view';                        
+                    } else {
+                        obj_type = arguments[0];
+                        obj_id = arguments[1];
+                        action = (arguments.length > 2) ? arguments[2] : 'view';                            
                     }
-                    return _urlMap[obj.type_name](obj, action);
+                    
+                    return _urlMap[obj_type](obj_id, action);
                 }
                 
                 app.nav = {
@@ -251,12 +264,12 @@ define([
         };
     };
     
-    var extend = function(name, ext, module) {
+    /*var extend = function(name, ext, module) {
         _extensions[name] = {
             ext: ext,
             module: module
         };
-    };
+    };*/
     
     app.core = {
     
@@ -281,13 +294,11 @@ define([
         },
         
         defineExtender: function(name, extr) {
-            _extenders[name] = extr;
+            env.defineExtender(name, extr);
         },
         
         extend: function(obj, extns) {
-            _.each(extns, function(defn, extName) {
-                _extenders[extName].apply(obj, defn);
-            });
+            env.extend(obj, extns);
         }
     
     };

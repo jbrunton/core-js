@@ -1,7 +1,7 @@
 define([
-    'core/types/simple_type',
-    'core/types/environment',
-    'core/types/complex_type'
+    '../types/simple_type',
+    '../types/environment',
+    '../types/complex_type'
 ], function (SimpleType, Environment, ComplexType) {
     
     describe('SimpleType', function() {
